@@ -22,7 +22,7 @@ export default function App() {
         console.log('Authorized account has found', account);
         setCurrentAccount(account);
       } else {
-        console.log('Nothing account authorized has found');
+        console.log('No authorized account has found!');
       }
     } catch (error) {
       console.error(error.message);
