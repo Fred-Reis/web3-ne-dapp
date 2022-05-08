@@ -30,7 +30,8 @@
   font-weight: 600;
 }
 
-.waveButton {
+.waveButton,
+.connectWalletButton {
   cursor: pointer;
   margin-top: 25px;
   padding: 12px;
@@ -39,5 +40,13 @@
   color: #474343;
   border: none;
   border-radius: 5px;
-  box-shadow: 2px 3px 16px 3px rgba(36, 36, 36, 0.8);
+  box-shadow: 2px 3px 16px 3px rgba(56, 55, 55, 0.8);
+}
+
+.connectWalletButton {
+  width: 40%;
+  align-self: center;
+  background-color: dimgrey;
+  color: #fff;
+  box-shadow: 2px 3px 16px 3px rgba(255, 255, 255, 0.8);
 }
