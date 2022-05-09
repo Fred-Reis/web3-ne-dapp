@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import './style.css';
+import abi from './utils/waveContract.json';
 
 export default function App() {
   const [currentAccount, setCurrentAccount] = useState('');
+  const contractAddress = '0xB194eaa00586B868793fF8b46de20C5357ca1490';
+  const contractABI = abi.abi;
 
   const checkIfWalletIsConnected = async () => {
     try {
@@ -49,14 +52,38 @@ export default function App() {
     }
   };
 
+  const wave = async () => {
+    try {
+      const { ethereum } = window;
+
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const wavePortalContract = new ethers.Contract(
+          contractAddress,
+          contractABI,
+          signer
+        );
+
+        const waveTxn = await wavePortalContract.wave();
+        console.log('Minning... ', waveTxn.hash);
+
+        await waveTxn.wait();
+        console.log('Minned -- ', waveTxn.hash);
+
+        let count = await wavePortalContract.getTotalWaves();
+        console.log('Retrieving wave numbers...', count.toNumber());
+      } else {
+        console.log('Ethereum object not found');
+      }
+    } catch (error) {
+      console.error(error.message);
+    }
+  };
+
   useEffect(() => {
-    // console.log('ethers', ethers);
     checkIfWalletIsConnected();
   }, []);
-
-  const wave = () => {
-    console.log('oi');
-  };
 
   return (
     <div className="mainContainer">
