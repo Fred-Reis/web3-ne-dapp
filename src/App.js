@@ -5,7 +5,11 @@ import abi from './utils/waveContract.json';
 
 export default function App() {
   const [currentAccount, setCurrentAccount] = useState('');
-  const contractAddress = '0xB194eaa00586B868793fF8b46de20C5357ca1490';
+  const [allWaves, setAllWaves] = useState([]);
+  const [waveMessage, setWaveMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const contractAddress = '0x55865345a7e9989Fb1d688d26Aa9bc9EcE4fE782';
   const contractABI = abi.abi;
 
   const checkIfWalletIsConnected = async () => {
@@ -24,6 +28,7 @@ export default function App() {
         const account = accounts[0];
         console.log('Authorized account has found', account);
         setCurrentAccount(account);
+        getAllWaves();
       } else {
         console.log('No authorized account has found!');
       }
@@ -65,11 +70,16 @@ export default function App() {
           signer
         );
 
-        const waveTxn = await wavePortalContract.wave();
+        setLoading(true);
+
+        const waveTxn = await wavePortalContract.wave(waveMessage); // Implement somecode here
         console.log('Minning... ', waveTxn.hash);
 
         await waveTxn.wait();
         console.log('Minned -- ', waveTxn.hash);
+
+        setWaveMessage('');
+        setLoading(false);
 
         let count = await wavePortalContract.getTotalWaves();
         console.log('Retrieving wave numbers...', count.toNumber());
@@ -78,6 +88,40 @@ export default function App() {
       }
     } catch (error) {
       console.error(error.message);
+      setWaveMessage('');
+      setLoading(false);
+    }
+  };
+
+  const getAllWaves = async () => {
+    try {
+      const { ethereum } = window;
+
+      if (ethereum) {
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const wavePortalContract = new ethers.Contract(
+          contractAddress,
+          contractABI,
+          signer
+        );
+
+        const waves = await wavePortalContract.getAllWaves();
+
+        let wavesCleaned = [];
+        waves.forEach((wave) => {
+          wavesCleaned.push({
+            address: wave.waver,
+            timestamp: new Date(wave.timestamp * 1000),
+            message: wave.message,
+          });
+        });
+        setAllWaves(wavesCleaned);
+      } else {
+        console.log('Ethereum object not found!');
+      }
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -95,8 +139,21 @@ export default function App() {
           on Web3!
         </div>
 
+        {currentAccount && (
+          <div className="inputContainer">
+            <label>Please insert your message to wave</label>
+            <input
+              disabled={loading}
+              onChange={(e) => {
+                setWaveMessage(e.target.value);
+              }}
+              value={waveMessage}
+            />
+          </div>
+        )}
+
         <button className="waveButton" onClick={wave}>
-          🙋🏻‍♀️🙋‍♀️🙋‍♀️🙋🏽‍♀️🙋🏽‍♀️🙋🏿‍♀️ Let's wave for people 🙋🏼‍♂️🙋🏻‍♂️🙋🏽‍♂️🙋🏾‍♂️🙋🏿‍♂️🙋🏻‍♂️
+          🙋🏼‍♀️🙋🏻‍♀️🙋🏽‍♀️🙋🏽‍♀️🙋🏿‍♀️ Let's wave for people 🙋🏼‍♂️🙋🏻‍♂️🙋🏽‍♂️🙋🏾‍♂️🙋🏿‍♂️
         </button>
 
         {!currentAccount && (
@@ -104,6 +161,14 @@ export default function App() {
             Connect Wallet
           </button>
         )}
+
+        {allWaves.map((wave, idx) => (
+          <div key={idx} className="waveListContainer">
+            <div>Address: {wave.address}</div>
+            <div>Date/Time: {wave.timestamp.toString()}</div>
+            <div>Message: {wave.message}</div>
+          </div>
+        ))}
       </div>
     </div>
   );
