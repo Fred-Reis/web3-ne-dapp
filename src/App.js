@@ -9,7 +9,7 @@ export default function App() {
   const [waveMessage, setWaveMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const contractAddress = '0x55865345a7e9989Fb1d688d26Aa9bc9EcE4fE782';
+  const contractAddress = '0x75AF2bB850B46DE4c454d1B295Dda42e6455205e';
   const contractABI = abi.abi;
 
   const checkIfWalletIsConnected = async () => {
@@ -28,7 +28,6 @@ export default function App() {
         const account = accounts[0];
         console.log('Authorized account has found', account);
         setCurrentAccount(account);
-        getAllWaves();
       } else {
         console.log('No authorized account has found!');
       }
@@ -72,7 +71,8 @@ export default function App() {
 
         setLoading(true);
 
-        const waveTxn = await wavePortalContract.wave(waveMessage); // Implement somecode here
+        const waveTxn = await wavePortalContract.wave(waveMessage);
+
         console.log('Minning... ', waveTxn.hash);
 
         await waveTxn.wait();
@@ -129,6 +129,10 @@ export default function App() {
     checkIfWalletIsConnected();
   }, []);
 
+  useEffect(() => {
+    getAllWaves();
+  }, [loading]);
+
   return (
     <div className="mainContainer">
       <div className="dataContainer">
@@ -143,6 +147,7 @@ export default function App() {
           <div className="inputContainer">
             <label>Please insert your message to wave</label>
             <input
+              placeholder="Type a message to wave for people"
               disabled={loading}
               onChange={(e) => {
                 setWaveMessage(e.target.value);

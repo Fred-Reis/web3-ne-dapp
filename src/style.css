@@ -1,6 +1,7 @@
 .mainContainer {
-  background-color: #a9a9a9;
-  width: 800px;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  background-color: #a0a0a0;
+  max-width: 800px;
   margin: 30px auto;
   flex: 1;
   display: flex;
@@ -20,15 +21,15 @@
   text-align: center;
   font-size: 32px;
   font-weight: 800;
-  color: #fff;
+  color: #4ce577;
 }
 
 .bio {
   text-align: center;
-  color: #ededed;
+  color: #fff;
   margin-top: 16px;
-  font-size: 18px;
-  font-weight: 600;
+  font-size: 20px;
+  font-weight: 500;
 }
 
 .waveButton,
@@ -38,7 +39,7 @@
   padding: 12px;
   font-size: 16px;
   font-weight: 600;
-  color: #474343;
+  color: #7c3aed;
   border: none;
   border-radius: 5px;
   box-shadow: 2px 3px 16px 3px rgba(56, 55, 55, 0.8);
@@ -70,12 +71,13 @@
 }
 
 .inputContainer label {
-  color: #ededed;
+  color: #fff;
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .inputContainer input {
+  text-align: center;
   width: 80%;
   cursor: pointer;
   margin-top: 10px;
@@ -88,9 +90,31 @@
   box-shadow: 2px 3px 16px 3px rgba(56, 55, 55, 0.8);
 }
 
+::-webkit-input-placeholder {
+  color: #c7c6c6;
+}
+:-moz-placeholder {
+  color: #c7c6c6;
+  opacity: 1;
+}
+::-moz-placeholder {
+  color: #c7c6c6;
+  opacity: 1;
+}
+:-ms-input-placeholder {
+  color: #c7c6c6;
+}
+::-ms-input-placeholder {
+  color: #c7c6c6;
+}
+
+::placeholder {
+  color: #c7c6c6;
+}
+
 .waveListContainer {
   background: #fff;
-  color: #474343;
+  color: #606060;
   font-weight: 600;
   border-radius: 5px;
   box-shadow: 2px 3px 16px 3px rgba(56, 55, 55, 0.8);
