@@ -71,7 +71,9 @@ export default function App() {
 
         setLoading(true);
 
-        const waveTxn = await wavePortalContract.wave(waveMessage);
+        const waveTxn = await wavePortalContract.wave(waveMessage, {
+          gasLimit: 300000,
+        });
 
         console.log('Minning... ', waveTxn.hash);
 
@@ -94,9 +96,9 @@ export default function App() {
   };
 
   const getAllWaves = async () => {
-    try {
-      const { ethereum } = window;
+    const { ethereum } = window;
 
+    try {
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
@@ -108,14 +110,14 @@ export default function App() {
 
         const waves = await wavePortalContract.getAllWaves();
 
-        let wavesCleaned = [];
-        waves.forEach((wave) => {
-          wavesCleaned.push({
+        const wavesCleaned = waves.map((wave) => {
+          return {
             address: wave.waver,
             timestamp: new Date(wave.timestamp * 1000),
             message: wave.message,
-          });
+          };
         });
+
         setAllWaves(wavesCleaned);
       } else {
         console.log('Ethereum object not found!');
@@ -130,8 +132,38 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    getAllWaves();
-  }, [loading]);
+    const { ethereum } = window;
+    let wavePortalContract;
+
+    const onNewWave = (from, timestamp, message) => {
+      console.log('NewWave', from, timestamp, message);
+      setAllWaves((oldState) => [
+        ...oldState,
+        {
+          address: from,
+          timestamp: new Date(timestamp * 1000),
+          message,
+        },
+      ]);
+    };
+    if (ethereum) {
+      const provider = new ethers.providers.Web3Provider(ethereum);
+      const signer = provider.getSigner();
+
+      wavePortalContract = new ethers.Contract(
+        contractAddress,
+        contractABI,
+        signer
+      );
+      wavePortalContract.on('NewWave', onNewWave);
+
+      return () => {
+        if (wavePortalContract) {
+          wavePortalContract.off('NewWave', onNewWave);
+        }
+      };
+    }
+  }, []);
 
   return (
     <div className="mainContainer">
